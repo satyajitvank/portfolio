@@ -177,8 +177,8 @@ const PORTFOLIO_DATA = {
         { label: "Diagnostics", value: "Interactive" },
         { label: "Layout", value: "100% Responsive" }
       ],
-      demoUrl: "https://github.com/satyajitvank",
-      githubUrl: "https://github.com/satyajitvank",
+      demoUrl: "https://github.com/satyajitvank/AutoParts",
+      githubUrl: "https://github.com/satyajitvank/AutoParts",
       highlights: [
         "🛒 Automotive Parts Platform with dynamic vehicle make/model/year lookup filter.",
         "🚗 Comprehensive Vehicle & Parts Information display with high-fidelity component cards.",

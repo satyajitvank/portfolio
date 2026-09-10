@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initExperience();
   initContactForm();
   initModalHandlers();
+  initGitHubIntegration();
 });
 
 // 1. Initialize Profile Specs & Pillars
@@ -469,3 +470,119 @@ function showToast(message) {
     toast.classList.remove('show');
   }, 3500);
 }
+
+// 9. Live GitHub API Integration
+function initGitHubIntegration() {
+  const container = document.getElementById('github-repos-grid');
+  const userBadge = document.getElementById('github-user-badge');
+  if (!container) return;
+
+  // Fallback / Initial repositories from Satyajit's verified GitHub profile
+  const initialRepos = [
+    {
+      name: 'AutoParts',
+      html_url: 'https://github.com/satyajitvank/AutoParts',
+      description: 'High-Performance Automotive Marketplace, Dyno Tuner & Diagnostics Platform',
+      language: 'TypeScript',
+      stargazers_count: 0,
+      forks_count: 0
+    },
+    {
+      name: 'AUTOMATION-INSTITUTE',
+      html_url: 'https://github.com/satyajitvank/AUTOMATION-INSTITUTE',
+      description: 'Educational website & platform interface',
+      language: 'JavaScript',
+      stargazers_count: 0,
+      forks_count: 0
+    },
+    {
+      name: 'SOLAR-SYSTEM-PROJECT',
+      html_url: 'https://github.com/satyajitvank/SOLAR-SYSTEM-PROJECT',
+      description: 'Interactive CSS 3D solar system orbital simulation',
+      language: 'CSS',
+      stargazers_count: 0,
+      forks_count: 0
+    },
+    {
+      name: 'OS-LAB-P',
+      html_url: 'https://github.com/satyajitvank/OS-LAB-P',
+      description: 'Operating Systems practical implementations and shell scripts',
+      language: 'Shell',
+      stargazers_count: 0,
+      forks_count: 0
+    },
+    {
+      name: 'Shoes-project',
+      html_url: 'https://github.com/satyajitvank/Shoes-project',
+      description: 'E-commerce footwear catalog & backend logic',
+      language: 'Python',
+      stargazers_count: 0,
+      forks_count: 0
+    },
+    {
+      name: 'satyajitvank',
+      html_url: 'https://github.com/satyajitvank/satyajitvank',
+      description: 'Personal GitHub configuration and special repository',
+      language: 'Markdown',
+      stargazers_count: 0,
+      forks_count: 0
+    }
+  ];
+
+  function getLangClass(lang) {
+    if (!lang) return 'dot-default';
+    const l = lang.toLowerCase();
+    if (l.includes('typescript')) return 'dot-typescript';
+    if (l.includes('javascript')) return 'dot-javascript';
+    if (l.includes('python')) return 'dot-python';
+    if (l.includes('css')) return 'dot-css';
+    if (l.includes('shell') || l.includes('bash')) return 'dot-shell';
+    return 'dot-default';
+  }
+
+  function renderRepos(repos) {
+    container.innerHTML = repos.slice(0, 6).map(r => `
+      <div class="github-repo-card reveal-on-scroll">
+        <div class="repo-card-top">
+          <a href="${r.html_url}" target="_blank" rel="noopener noreferrer" class="repo-name-link">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
+            ${r.name}
+          </a>
+          <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 9999px; background: var(--bg-tertiary); color: var(--text-muted);">Public</span>
+        </div>
+        <p class="repo-desc">${r.description || 'Public GitHub project repository by Satyajit Vank.'}</p>
+        <div class="repo-card-meta">
+          <span class="repo-lang-tag">
+            <span class="lang-dot ${getLangClass(r.language)}"></span>
+            ${r.language || 'Code'}
+          </span>
+          <a href="${r.html_url}" target="_blank" rel="noopener noreferrer" style="color: var(--accent-primary); font-weight: 600; font-size: 0.8rem; display: flex; align-items: center; gap: 4px;">
+            Inspect
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Render immediately with initial data
+  renderRepos(initialRepos);
+
+  // Live fetch from GitHub API
+  fetch('https://api.github.com/users/satyajitvank/repos?sort=updated', {
+    headers: { 'Accept': 'application/vnd.github.v3+json' }
+  })
+  .then(res => {
+    if (!res.ok) throw new Error('GitHub API rate limit or error');
+    return res.json();
+  })
+  .then(liveRepos => {
+    if (Array.isArray(liveRepos) && liveRepos.length > 0) {
+      renderRepos(liveRepos);
+    }
+  })
+  .catch(err => {
+    console.log('GitHub API offline or rate-limited; fallback data active:', err.message);
+  });
+}
+
